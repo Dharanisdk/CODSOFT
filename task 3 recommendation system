@@ -1,0 +1,41 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
+#movie dataset example
+data = {
+    'Movie': ['Movie A', 'Movie B', 'Movie C', 'Movie D'],
+    'Genre': ['Action', 'Drama', 'Action', 'Comedy'],
+    'Director': ['Director X', 'Director Y', 'Director X', 'Director Z'],
+    'Rating': [4.5, 3.8, 4.2, 3.5]
+}
+
+movies = pd.DataFrame(data)
+
+#user profile example
+user_profile = {
+    'Genre': ['Action', 'Drama'],
+    'Director': ['Director X'],
+    'Rating': [4.0, 3.0]
+}
+
+# Converting user profile to a DataFrame
+user_profile_df = pd.DataFrame(user_profile)
+
+
+movies = pd.get_dummies(movies, columns=['Genre'])
+
+# Calculate similarity
+movie_features = movies.drop(['Movie', 'Director', 'Rating'], axis=1)
+user_profile_features = user_profile_df.drop(['Rating'], axis=1)
+
+# Calculate cosine similarity
+similarities = cosine_similarity(movie_features, user_profile_features)
+
+# Add the similarity scores to the movies DataFrame
+movies['Similarity'] = similarities
+
+# Sort movies by similarity
+recommended_movies = movies.sort_values(by='Similarity', ascending=False)
+
+# Print recommended movies
+print(recommended_movies[['Movie', 'Similarity']])
